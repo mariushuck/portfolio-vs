@@ -3,20 +3,24 @@
   "version": "1.0.0",
   "author": "Marius Huck",
   "license": "ISC",
+  "main": "src/main.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mariushuck/portfolio-vs.git"
   },
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/main.js"
+    "start": "node src/main.js",
+    "watch": "nodemon src/main.js",
+    "debug": "node --inspect-brk src/main.js"
   },
   "dependencies": {
     "better-sqlite3": "^12.6.2",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "logging": "^4.2.0"
+    "http-terminator": "^3.2.0",
+    "logging": "^4.2.0",
+    "qs": "^6.15.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
