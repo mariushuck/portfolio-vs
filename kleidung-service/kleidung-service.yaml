@@ -1,0 +1,269 @@
+openapi: 3.1.0
+info:
+  title: Kleidung-Service API
+  version: 1.0.0
+  description: Verwaltung von Kleidungsstücken und Materialkategorien.
+tags:
+  - name: Kategorien
+  - name: Kleidungsstücke
+paths:
+  /kategorien:
+    get:
+      tags:
+        - Kategorien
+      summary: Alle Kategorien abrufen
+      description: Liefert eine Liste aller Materialkategorien (wird auch vom Wasch-Service benötigt).
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Kategorie"
+    post:
+      tags:
+        - Kategorien
+      summary: Neue Kategorie anlegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KategorieInput"
+      responses:
+        "201":
+          description: Kategorie erfolgreich erstellt
+        "400":
+          description: Fehlerhafte Eingabedaten
+
+  /kategorien/{id}:
+    get:
+      tags:
+        - Kategorien
+      summary: Einzelne Kategorie abrufen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+        "404":
+          description: Kategorie nicht gefunden
+    put:
+      tags:
+        - Kategorien
+      summary: Kategorie vollständig aktualisieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KategorieInput"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Kategorie nicht gefunden
+    patch:
+      tags:
+        - Kategorien
+      summary: Kategorie teilweise aktualisieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KategorieUpdate"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Kategorie nicht gefunden
+    delete:
+      tags:
+        - Kategorien
+      summary: Kategorie löschen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreich gelöscht
+        "404":
+          description: Kategorie nicht gefunden
+
+  /kleidungsstuecke:
+    get:
+      tags:
+        - Kleidungsstücke
+      summary: Alle Kleidungsstücke abrufen
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+    post:
+      tags:
+        - Kleidungsstücke
+      summary: Neues Kleidungsstück hinzufügen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KleidungsstueckInput"
+      responses:
+        "201":
+          description: Kleidungsstück erfolgreich angelegt
+        "400":
+          description: Ungültige Daten
+
+  /kleidungsstuecke/{id}:
+    get:
+      tags:
+        - Kleidungsstücke
+      summary: Einzelnes Kleidungsstück abrufen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+        "404":
+          description: Kleidungsstück nicht gefunden
+    put:
+      tags:
+        - Kleidungsstücke
+      summary: Kleidungsstück vollständig aktualisieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KleidungsstueckInput"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Kleidungsstück nicht gefunden
+    patch:
+      tags:
+        - Kleidungsstücke
+      summary: Kleidungsstück teilweise aktualisieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KleidungsstueckUpdate"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Kleidungsstück nicht gefunden
+    delete:
+      tags:
+        - Kleidungsstücke
+      summary: Kleidungsstück löschen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreich gelöscht
+        "404":
+          description: Kleidungsstück nicht gefunden
+
+components:
+  schemas:
+    Kategorie:
+      type: object
+      properties:
+        id:
+          type: integer
+        bezeichnung:
+          type: string
+        materialtyp:
+          type: string
+    KategorieInput:
+      type: object
+      required:
+        - bezeichnung
+        - materialtyp
+      properties:
+        bezeichnung:
+          type: string
+        materialtyp:
+          type: string
+    KategorieUpdate:
+      type: object
+      properties:
+        bezeichnung:
+          type: string
+        materialtyp:
+          type: string
+    KleidungsstueckInput:
+      type: object
+      required:
+        - name
+        - kategorieId
+      properties:
+        name:
+          type: string
+        kategorieId:
+          type: integer
+        farbe:
+          type: string
+    KleidungsstueckUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        kategorieId:
+          type: integer
+        farbe:
+          type: string

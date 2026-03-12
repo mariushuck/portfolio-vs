@@ -1,0 +1,20 @@
+{
+  "name": "wasch-service",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/mariushuck/portfolio-vs#readme",
+  "bugs": {
+    "url": "https://github.com/mariushuck/portfolio-vs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mariushuck/portfolio-vs.git"
+  },
+  "license": "ISC",
+  "author": "Marius Huck",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

@@ -1,0 +1,389 @@
+openapi: 3.1.0
+info:
+  title: Wasch-Service API
+  version: 1.0.0
+  description: Verwaltung von Waschprogrammen, Empfehlungen und Waschgängen.
+tags:
+  - name: Waschprogramme
+  - name: Empfehlungen
+  - name: Waschgänge
+paths:
+  /waschprogramme:
+    get:
+      tags:
+        - Waschprogramme
+      summary: Verfügbare Waschprogramme abrufen
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Waschprogramm"
+    post:
+      tags:
+        - Waschprogramme
+      summary: Neues Waschprogramm anlegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaschprogrammInput"
+      responses:
+        "201":
+          description: Waschprogramm erfolgreich erstellt
+        "400":
+          description: Fehlerhafte Eingabedaten
+
+  /waschprogramme/{id}:
+    get:
+      tags:
+        - Waschprogramme
+      summary: Einzelnes Waschprogramm abrufen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+        "404":
+          description: Waschprogramm nicht gefunden
+    put:
+      tags:
+        - Waschprogramme
+      summary: Waschprogramm vollständig aktualisieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaschprogrammInput"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Waschprogramm nicht gefunden
+    patch:
+      tags:
+        - Waschprogramme
+      summary: Waschprogramm teilweise aktualisieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaschprogrammUpdate"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Waschprogramm nicht gefunden
+    delete:
+      tags:
+        - Waschprogramme
+      summary: Waschprogramm löschen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreich gelöscht
+        "404":
+          description: Waschprogramm nicht gefunden
+
+  /empfehlungen:
+    get:
+      tags:
+        - Empfehlungen
+      summary: Alle Empfehlungen abrufen
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+    post:
+      tags:
+        - Empfehlungen
+      summary: Neue Empfehlung anlegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmpfehlungInput"
+      responses:
+        "201":
+          description: Empfehlung erfolgreich angelegt
+        "400":
+          description: Fehlerhafte Eingabedaten
+
+  /empfehlungen/{kategorieId}:
+    get:
+      tags:
+        - Empfehlungen
+      summary: Empfehlung für eine bestimmte Materialkategorie abrufen
+      parameters:
+        - name: kategorieId
+          in: path
+          required: true
+          description: Die ID der Kategorie aus dem Kleidung-Service
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+        "404":
+          description: Keine Empfehlung für diese Kategorie gefunden
+    put:
+      tags:
+        - Empfehlungen
+      summary: Empfehlung vollständig aktualisieren
+      parameters:
+        - name: kategorieId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmpfehlungInput"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Empfehlung nicht gefunden
+    patch:
+      tags:
+        - Empfehlungen
+      summary: Empfehlung teilweise aktualisieren
+      parameters:
+        - name: kategorieId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmpfehlungUpdate"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Empfehlung nicht gefunden
+    delete:
+      tags:
+        - Empfehlungen
+      summary: Empfehlung löschen
+      parameters:
+        - name: kategorieId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreich gelöscht
+        "404":
+          description: Empfehlung nicht gefunden
+
+  /waschgaenge:
+    get:
+      tags:
+        - Waschgänge
+      summary: Historie der Waschgänge abrufen
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+    post:
+      tags:
+        - Waschgänge
+      summary: Neuen Waschgang starten/protokollieren
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaschgangInput"
+      responses:
+        "201":
+          description: Waschgang erfolgreich gestartet
+        "400":
+          description: Fehlerhafte Eingabedaten
+
+  /waschgaenge/{id}:
+    get:
+      tags:
+        - Waschgänge
+      summary: Einzelnen Waschgang abrufen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+        "404":
+          description: Waschgang nicht gefunden
+    put:
+      tags:
+        - Waschgänge
+      summary: Waschgang vollständig aktualisieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaschgangInput"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Waschgang nicht gefunden
+    patch:
+      tags:
+        - Waschgänge
+      summary: Waschgang teilweise aktualisieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaschgangUpdate"
+      responses:
+        "200":
+          description: Erfolgreich aktualisiert
+        "400":
+          description: Fehlerhafte Eingabedaten
+        "404":
+          description: Waschgang nicht gefunden
+    delete:
+      tags:
+        - Waschgänge
+      summary: Waschgang löschen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Erfolgreich gelöscht
+        "404":
+          description: Waschgang nicht gefunden
+
+components:
+  schemas:
+    Waschprogramm:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        temperatur:
+          type: integer
+        dauer:
+          type: integer
+    WaschprogrammInput:
+      type: object
+      required:
+        - name
+        - temperatur
+        - dauer
+      properties:
+        name:
+          type: string
+        temperatur:
+          type: integer
+        dauer:
+          type: integer
+    WaschprogrammUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        temperatur:
+          type: integer
+        dauer:
+          type: integer
+    EmpfehlungInput:
+      type: object
+      required:
+        - kategorieId
+        - waschprogrammId
+      properties:
+        kategorieId:
+          type: integer
+        waschprogrammId:
+          type: integer
+        hinweise:
+          type: string
+    EmpfehlungUpdate:
+      type: object
+      properties:
+        waschprogrammId:
+          type: integer
+        hinweise:
+          type: string
+    WaschgangInput:
+      type: object
+      required:
+        - waschprogrammId
+      properties:
+        waschprogrammId:
+          type: integer
+    WaschgangUpdate:
+      type: object
+      properties:
+        waschprogrammId:
+          type: integer
