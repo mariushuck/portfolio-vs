@@ -50,7 +50,7 @@ const fillWaschprogrammeTable = db_ws.prepare(`
                (2, 'Wolle 20 Grad',       20, 35),
                (3, 'Jeans 40 Grad',       40, 60)
                
-        -- Schon vorhandene Datensätze aktualisieren
+        -- Schon vorhandene Datensätze aktualisieren (GitHub Copilot)
         ON CONFLICT(id) DO UPDATE SET name       = excluded.name,
                                       temperatur = excluded.temperatur,
                                       dauer      = excluded.dauer
@@ -62,7 +62,7 @@ const fillWaschgaengeTable = db_ws.prepare(`
                (2, 2, '2026-03-11T10:30:00.000Z', 'in_bearbeitung'),
                (3, 3, '2026-03-12T07:45:00.000Z', 'geplant')
                
-        -- Schon vorhandene Datensätze aktualisieren
+        -- Schon vorhandene Datensätze aktualisieren (GitHub Copilot)
         ON CONFLICT(id) DO UPDATE SET waschprogramm_id = excluded.waschprogramm_id,
                                       zeitstempel      = excluded.zeitstempel,
                                       status           = excluded.status
@@ -74,7 +74,7 @@ const fillEmpfehlungenTable = db_ws.prepare(`
                (2, 2, 2),
                (3, 3, 3)
                
-        -- Schon vorhandene Datensätze aktualisieren
+        -- Schon vorhandene Datensätze aktualisieren (GitHub Copilot)
         ON CONFLICT(id) DO UPDATE SET kategorie_id     = excluded.kategorie_id,
                                       waschprogramm_id = excluded.waschprogramm_id
 `);

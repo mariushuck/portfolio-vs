@@ -37,7 +37,7 @@ const fillKategorienTable = db_ks.prepare(`
                (2, 'Pullover', 'Wolle'),
                (3, 'Jeans',    'Denim')
                
-        -- Schon vorhandene Datensätze aktualisieren
+        -- Schon vorhandene Datensätze aktualisieren (GitHub Copilot)
         ON CONFLICT(id) DO UPDATE SET bezeichnung = excluded.bezeichnung,
                                       materialtyp = excluded.materialtyp
 `);
@@ -48,7 +48,7 @@ const fillKleidungsstueckeTable = db_ks.prepare(`
                (2, 'Grauer Winterpullover', 2, 'grau'),
                (3, 'Blaue Slim Fit Jeans',  3, 'blau')
                
-        -- Schon vorhandene Datensätze aktualisieren
+        -- Schon vorhandene Datensätze aktualisieren (GitHub Copilot)
         ON CONFLICT(id) DO UPDATE SET name         = excluded.name,
                                       kategorie_id = excluded.kategorie_id,
                                       farbe        = excluded.farbe
