@@ -5,16 +5,17 @@ import path from "node:path";
 import url from "node:url";
 import process from "node:process";
 
-// import {db}            from "./database.js";
+import { db_ks } from "./database.js";
 import { logRequest } from "./middleware.js";
 import { handleError } from "./middleware.js";
 import { logger } from "./utils.js";
-// import controllers     from "./controllers/index.js";
+import controllers from "./controllers/index.js";
 
 /**
  * Konfiguration aus den Umgebungsvariablen des Betriebssystems einlesen
  * bzw. der .env-Datei, wenn sie existiert.
  */
+
 dotenv.config();
 
 const config = {
@@ -27,6 +28,7 @@ const config = {
  * Mit diesem Objekt müssen wir unten die Handler-Funktionen registrieren, um auf
  * HTTP-Anfragen reagieren zu können.
  */
+
 const app = express();
 
 app.set("query parser", (str) => qs.parse(str));
@@ -39,16 +41,9 @@ app.use(logRequest(logger));
 app.use(express.static(staticDir));
 app.use(express.json());
 
-// for (let controller of controllers || []) {
-//     controller(app);
-// }
-
-app.get("/api/hello/:name", (req, res) => {
-  res.status(200);
-  res.send({
-    message: `Hallo, ${req.params.name}`,
-  });
-});
+for (let controller of controllers || []) {
+  controller(app);
+}
 
 app.use(handleError(logger));
 
@@ -56,6 +51,7 @@ app.use(handleError(logger));
  * Webserver starten, damit er auf Verbindungsanfragen reagiert und HTTP-Requests
  * anfängt zu bearbeiten.
  */
+
 const server = app.listen(config.port, config.host, () => {
   console.log(`Der Server lauscht auf ${config.host}:${config.port}`);
 });
@@ -64,10 +60,11 @@ const server = app.listen(config.port, config.host, () => {
  * Graceful Shutdown: Alle Verbindungen sauber schließen, wenn der Serverprozess
  * beendet wird.
  */
+
 process.on("exit", () => {
   console.log("Server wird beendet ...");
   server.close();
-  // db.close();
+  db_ks.close();
 });
 
 process.on("SIGHUP", () => process.exit(128 + 1));

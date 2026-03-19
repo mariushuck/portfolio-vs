@@ -4,6 +4,7 @@ import logging from "logging";
  * Logger zum Ausgeben von Info-Meldungen, Warnungen und Fehlern mit den
  * Methoden `info()`, `warning()` und `error()`.
  */
+
 export const logger = logging("main");
 
 /**
@@ -16,6 +17,7 @@ export const logger = logging("main");
  * @param {string} message Leserliche Fehlermeldung
  * @param {number} status HTTP Status Code (Standard: 400)
  */
+
 export function throwError(name, message, status) {
   let error = new Error(message || "");
   error.name = name || "Error";
@@ -27,6 +29,7 @@ export function throwError(name, message, status) {
 /**
  * Hilfsfunktion zum Werfen eines HTTP 404 (Nicht gefunden) Fehlers.
  */
+
 export function throwNotFound() {
   throwError("NOT-FOUND", "Nicht gefunden", 404);
 }
