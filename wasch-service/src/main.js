@@ -5,11 +5,11 @@ import path from "node:path";
 import url from "node:url";
 import process from "node:process";
 
-// import {db}            from "./database.js";
+import { db_ws } from "./database.js";
 import { logRequest } from "./middleware.js";
 import { handleError } from "./middleware.js";
 import { logger } from "./utils.js";
-// import controllers     from "./controllers/index.js";
+import controllers from "./controllers/index.js";
 
 /**
  * Konfiguration aus den Umgebungsvariablen des Betriebssystems einlesen
@@ -39,16 +39,9 @@ app.use(logRequest(logger));
 app.use(express.static(staticDir));
 app.use(express.json());
 
-// for (let controller of controllers || []) {
-//     controller(app);
-// }
-
-app.get("/api/hello/:name", (req, res) => {
-  res.status(200);
-  res.send({
-    message: `Hallo, ${req.params.name}`,
-  });
-});
+for (let controller of controllers || []) {
+  controller(app);
+}
 
 app.use(handleError(logger));
 
@@ -67,7 +60,7 @@ const server = app.listen(config.port, config.host, () => {
 process.on("exit", () => {
   console.log("Server wird beendet ...");
   server.close();
-  // db.close();
+  db_ws.close();
 });
 
 process.on("SIGHUP", () => process.exit(128 + 1));

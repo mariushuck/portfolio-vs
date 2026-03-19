@@ -42,6 +42,17 @@ createWaschprogrammeTable.run();
 createWaschgaengeTable.run();
 createEmpfehlungenTable.run();
 
+const empfehlungenColumns = db_ws
+  .prepare("PRAGMA table_info(empfehlungen)")
+  .all();
+const hasHinweiseColumn = empfehlungenColumns.some(
+  (column) => column.name === "hinweise",
+);
+
+if (!hasHinweiseColumn) {
+  db_ws.prepare("ALTER TABLE empfehlungen ADD COLUMN hinweise TEXT").run();
+}
+
 // Demodaten anlegen
 
 const fillWaschprogrammeTable = db_ws.prepare(`
@@ -69,14 +80,15 @@ const fillWaschgaengeTable = db_ws.prepare(`
 `);
 
 const fillEmpfehlungenTable = db_ws.prepare(`
-    INSERT INTO empfehlungen(id, kategorie_id, waschprogramm_id)
-        VALUES (1, 1, 1),
-               (2, 2, 2),
-               (3, 3, 3)
+  INSERT INTO empfehlungen(id, kategorie_id, waschprogramm_id, hinweise)
+    VALUES (1, 1, 1, 'Schonwaschgang empfohlen'),
+         (2, 2, 2, 'Niedrige Temperatur fuer Wolle'),
+         (3, 3, 3, 'Jeans auf links waschen')
                
         -- Schon vorhandene Datensätze aktualisieren (GitHub Copilot)
         ON CONFLICT(id) DO UPDATE SET kategorie_id     = excluded.kategorie_id,
-                                      waschprogramm_id = excluded.waschprogramm_id
+                    waschprogramm_id = excluded.waschprogramm_id,
+                    hinweise         = excluded.hinweise
 `);
 
 fillWaschprogrammeTable.run();
