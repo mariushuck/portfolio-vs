@@ -1,0 +1,1 @@
+Wenn du Code generierst, füge am Anfang der Quellcodedatei einen Kommentarblock ein, der dokumentiert, dass der Code von Copilot generiert wurde, und der die entsprechende Codestelle sowie den Prompt angibt.
