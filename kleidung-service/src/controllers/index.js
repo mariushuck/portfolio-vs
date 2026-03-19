@@ -4,8 +4,7 @@
  * Prompt: "finish this kleidung-service. note the prewritten code. one controller and service for each database entity"
  */
 
-import helloController from "./hello.controller.js";
 import kleidungController from "./kleidung.controller.js";
 import kategorienController from "./kategorien.controller.js";
 
-export default [helloController, kleidungController, kategorienController];
+export default [kleidungController, kategorienController];
