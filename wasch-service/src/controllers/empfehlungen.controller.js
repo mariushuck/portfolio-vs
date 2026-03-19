@@ -50,7 +50,7 @@ function getEmpfehlungByKategorieId(req, res) {
 }
 
 function createEmpfehlungRoute(req, res) {
-  const { kategorieId, waschprogrammId, hinweise } = req.body;
+  const { kategorieId, waschprogrammId } = req.body;
 
   if (!Number.isInteger(kategorieId) || !Number.isInteger(waschprogrammId)) {
     throwError(
@@ -60,18 +60,13 @@ function createEmpfehlungRoute(req, res) {
     );
   }
 
-  if (hinweise !== undefined && typeof hinweise !== "string") {
-    throwError("INVALID-HINWEISE", "hinweise muss ein String sein", 400);
-  }
-
-  const result = createEmpfehlung(kategorieId, waschprogrammId, hinweise);
+  const result = createEmpfehlung(kategorieId, waschprogrammId);
 
   res.status(201);
   res.send({
     id: result.lastInsertRowid,
     kategorieId,
     waschprogrammId,
-    hinweise: hinweise || null,
   });
 }
 
@@ -82,7 +77,7 @@ function updateEmpfehlungRoute(req, res) {
     throwError("INVALID-KATEGORIE-ID", "Ungültige Kategorie-ID", 400);
   }
 
-  const { kategorieId, waschprogrammId, hinweise } = req.body;
+  const { kategorieId, waschprogrammId } = req.body;
 
   if (!Number.isInteger(kategorieId) || !Number.isInteger(waschprogrammId)) {
     throwError(
@@ -100,10 +95,6 @@ function updateEmpfehlungRoute(req, res) {
     );
   }
 
-  if (hinweise !== undefined && typeof hinweise !== "string") {
-    throwError("INVALID-HINWEISE", "hinweise muss ein String sein", 400);
-  }
-
   const item = findEmpfehlungByKategorieId(routeKategorieId);
 
   if (!item) {
@@ -113,7 +104,6 @@ function updateEmpfehlungRoute(req, res) {
   const result = updateEmpfehlungByKategorieId(
     routeKategorieId,
     waschprogrammId,
-    hinweise,
   );
 
   if (result.changes === 0) {
@@ -132,12 +122,17 @@ function patchEmpfehlungRoute(req, res) {
     throwError("INVALID-KATEGORIE-ID", "Ungültige Kategorie-ID", 400);
   }
 
-  const { waschprogrammId, hinweise } = req.body;
+  const { waschprogrammId } = req.body;
 
-  if (
-    (waschprogrammId !== undefined && !Number.isInteger(waschprogrammId)) ||
-    (hinweise !== undefined && typeof hinweise !== "string")
-  ) {
+  if (waschprogrammId === undefined) {
+    throwError(
+      "MISSING-FIELDS",
+      "Erforderliches Feld: waschprogrammId (int)",
+      400,
+    );
+  }
+
+  if (!Number.isInteger(waschprogrammId)) {
     throwError("INVALID-FIELDS", "Ungültige Feldwerte", 400);
   }
 

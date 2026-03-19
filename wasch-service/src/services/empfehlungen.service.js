@@ -10,7 +10,6 @@ const findAllEmpfehlungenStmt = db_ws.prepare(`
   SELECT e.id,
          e.kategorie_id,
          e.waschprogramm_id,
-         e.hinweise,
          w.name AS waschprogramm_name,
          w.temperatur,
          w.dauer
@@ -24,7 +23,6 @@ const findEmpfehlungByKategorieIdStmt = db_ws.prepare(`
   SELECT e.id,
          e.kategorie_id,
          e.waschprogramm_id,
-         e.hinweise,
          w.name AS waschprogramm_name,
          w.temperatur,
          w.dauer
@@ -35,23 +33,18 @@ const findEmpfehlungByKategorieIdStmt = db_ws.prepare(`
 `);
 
 const createEmpfehlungStmt = db_ws.prepare(`
-  INSERT INTO empfehlungen (kategorie_id, waschprogramm_id, hinweise)
-    VALUES (?, ?, ?)
+  INSERT INTO empfehlungen (kategorie_id, waschprogramm_id)
+    VALUES (?, ?)
 `);
 
 const updateEmpfehlungByKategorieIdStmt = db_ws.prepare(`
   UPDATE empfehlungen
-     SET waschprogramm_id = ?,
-         hinweise = ?
+    SET waschprogramm_id = ?
    WHERE kategorie_id = ?
 `);
 
 const patchEmpfehlungWaschprogrammStmt = db_ws.prepare(`
   UPDATE empfehlungen SET waschprogramm_id = ? WHERE kategorie_id = ?
-`);
-
-const patchEmpfehlungHinweiseStmt = db_ws.prepare(`
-  UPDATE empfehlungen SET hinweise = ? WHERE kategorie_id = ?
 `);
 
 const deleteEmpfehlungByKategorieIdStmt = db_ws.prepare(`
@@ -67,45 +60,20 @@ export function findEmpfehlungByKategorieId(kategorieId) {
   return findEmpfehlungByKategorieIdStmt.get(kategorieId);
 }
 
-export function createEmpfehlung(kategorieId, waschprogrammId, hinweise) {
-  return createEmpfehlungStmt.run(
-    kategorieId,
-    waschprogrammId,
-    hinweise || null,
-  );
+export function createEmpfehlung(kategorieId, waschprogrammId) {
+  return createEmpfehlungStmt.run(kategorieId, waschprogrammId);
 }
 
-export function updateEmpfehlungByKategorieId(
-  kategorieId,
-  waschprogrammId,
-  hinweise,
-) {
-  return updateEmpfehlungByKategorieIdStmt.run(
-    waschprogrammId,
-    hinweise || null,
-    kategorieId,
-  );
+export function updateEmpfehlungByKategorieId(kategorieId, waschprogrammId) {
+  return updateEmpfehlungByKategorieIdStmt.run(waschprogrammId, kategorieId);
 }
 
 export function patchEmpfehlungByKategorieId(kategorieId, updates) {
-  const { waschprogrammId, hinweise } = updates;
+  const { waschprogrammId } = updates;
   const hasWaschprogrammId = waschprogrammId !== undefined;
-  const hasHinweise = hinweise !== undefined;
 
-  if (hasWaschprogrammId && hasHinweise) {
-    return updateEmpfehlungByKategorieId(
-      kategorieId,
-      waschprogrammId,
-      hinweise,
-    );
-  }
-
-  if (hasWaschprogrammId && !hasHinweise) {
+  if (hasWaschprogrammId) {
     return patchEmpfehlungWaschprogrammStmt.run(waschprogrammId, kategorieId);
-  }
-
-  if (!hasWaschprogrammId && hasHinweise) {
-    return patchEmpfehlungHinweiseStmt.run(hinweise, kategorieId);
   }
 
   return { changes: 0 };

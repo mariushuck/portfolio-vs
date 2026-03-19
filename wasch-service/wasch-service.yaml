@@ -366,15 +366,11 @@ components:
           type: integer
         waschprogrammId:
           type: integer
-        hinweise:
-          type: string
     EmpfehlungUpdate:
       type: object
       properties:
         waschprogrammId:
           type: integer
-        hinweise:
-          type: string
     WaschgangInput:
       type: object
       required:
