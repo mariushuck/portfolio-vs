@@ -19,7 +19,7 @@ dotenv.config();
 
 const config = {
   host: process.env.LISTEN_HOST || "localhost",
-  port: process.env.LISTEN_PORT || 9000,
+  port: process.env.LISTEN_PORT || 4321,
 };
 
 /**
