@@ -1,9 +1,3 @@
-/**
- * Copilot-generierter Code
- * Codestelle: kleidung-service/src/controllers/kategorien.controller.js
- * Prompt: "use the endpoints described in the kleidung-service.yaml"
- */
-
 import {
   findAllKategorien,
   findKategorieById,
@@ -27,7 +21,7 @@ export default function registerRoutes(app) {
 }
 
 /**
- * GET /kategorien - Returns array of all Kategorien
+ * GET /kategorien
  * @param {Express.Request} req
  * @param {Express.Response} res
  */

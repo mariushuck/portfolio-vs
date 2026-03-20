@@ -15,7 +15,6 @@ import controllers from "./controllers/index.js";
  * Konfiguration aus den Umgebungsvariablen des Betriebssystems einlesen
  * bzw. der .env-Datei, wenn sie existiert.
  */
-
 dotenv.config();
 
 const config = {
@@ -28,7 +27,6 @@ const config = {
  * Mit diesem Objekt müssen wir unten die Handler-Funktionen registrieren, um auf
  * HTTP-Anfragen reagieren zu können.
  */
-
 const app = express();
 
 app.set("query parser", (str) => qs.parse(str));
@@ -51,7 +49,6 @@ app.use(handleError(logger));
  * Webserver starten, damit er auf Verbindungsanfragen reagiert und HTTP-Requests
  * anfängt zu bearbeiten.
  */
-
 const server = app.listen(config.port, config.host, () => {
   console.log(`Der Server lauscht auf ${config.host}:${config.port}`);
 });
@@ -60,7 +57,6 @@ const server = app.listen(config.port, config.host, () => {
  * Graceful Shutdown: Alle Verbindungen sauber schließen, wenn der Serverprozess
  * beendet wird.
  */
-
 process.on("exit", () => {
   console.log("Server wird beendet ...");
   server.close();

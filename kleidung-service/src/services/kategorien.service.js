@@ -1,12 +1,4 @@
-/**
- * Copilot-generierter Code
- * Codestelle: kleidung-service/src/services/kategorien.service.js
- * Prompt: "finish this kleidung-service. note the prewritten code. one controller and service for each database entity"
- */
-
 import { db_ks } from "../database.js";
-
-// ==================== READ Statements ====================
 
 const findAllKategorienStmt = db_ks.prepare(`
   SELECT id,
@@ -24,14 +16,10 @@ const findKategorieByIdStmt = db_ks.prepare(`
    WHERE id = ?
 `);
 
-// ==================== CREATE Statement ====================
-
 const createKategorieStmt = db_ks.prepare(`
   INSERT INTO kategorien (bezeichnung, materialtyp)
     VALUES (?, ?)
 `);
-
-// ==================== UPDATE Statement ====================
 
 const updateKategorieStmt = db_ks.prepare(`
   UPDATE kategorien
@@ -39,8 +27,6 @@ const updateKategorieStmt = db_ks.prepare(`
         materialtyp = ?
   WHERE id = ?
 `);
-
-// ==================== PATCH Statements (Partial Update) ====================
 
 const patchKategorieBezeichnungStmt = db_ks.prepare(`
   UPDATE kategorien SET bezeichnung = ? WHERE id = ?
@@ -50,17 +36,12 @@ const patchKategorieMaterialtypStmt = db_ks.prepare(`
   UPDATE kategorien SET materialtyp = ? WHERE id = ?
 `);
 
-// ==================== DELETE Statement ====================
-
 const deleteKategorieStmt = db_ks.prepare(`
   DELETE FROM kategorien
    WHERE id = ?
 `);
 
-// ==================== READ ====================
-
 /**
- * Finds all Kategorien
  * @returns {Array<object>}
  */
 export function findAllKategorien() {
@@ -68,7 +49,6 @@ export function findAllKategorien() {
 }
 
 /**
- * Finds a specific Kategorie by ID
  * @param {number} id
  * @returns {object | undefined}
  */
@@ -76,10 +56,7 @@ export function findKategorieById(id) {
   return findKategorieByIdStmt.get(id);
 }
 
-// ==================== CREATE ====================
-
 /**
- * Creates a new Kategorie
  * @param {string} bezeichnung
  * @param {string} materialtyp
  * @returns {object}
@@ -88,10 +65,7 @@ export function createKategorie(bezeichnung, materialtyp) {
   return createKategorieStmt.run(bezeichnung, materialtyp);
 }
 
-// ==================== UPDATE ====================
-
 /**
- * Updates an existing Kategorie
  * @param {number} id
  * @param {string} bezeichnung
  * @param {string} materialtyp
@@ -101,12 +75,9 @@ export function updateKategorie(id, bezeichnung, materialtyp) {
   return updateKategorieStmt.run(bezeichnung, materialtyp, id);
 }
 
-// ==================== PATCH ====================
-
 /**
- * Partially updates a Kategorie with only provided fields
  * @param {number} id
- * @param {object} updates - Object with fields: bezeichnung, materialtyp
+ * @param {object} updates
  * @returns {object}
  */
 export function patchKategorie(id, updates) {
@@ -125,10 +96,7 @@ export function patchKategorie(id, updates) {
   }
 }
 
-// ==================== DELETE ====================
-
 /**
- * Deletes a Kategorie by ID
  * @param {number} id
  * @returns {object}
  */

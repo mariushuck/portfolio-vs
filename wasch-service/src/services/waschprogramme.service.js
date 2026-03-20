@@ -1,9 +1,3 @@
-/**
- * Copilot-generierter Code
- * Codestelle: wasch-service/src/services/waschprogramme.service.js
- * Prompt: "Based on the structure of the kleidung service, build the wasch service with the defined endpoints in wasch-service.yaml"
- */
-
 import { db_ws } from "../database.js";
 
 const findAllWaschprogrammeStmt = db_ws.prepare(`

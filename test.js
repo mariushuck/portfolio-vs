@@ -1,3 +1,5 @@
+// Github Copilot Test Script
+
 const KLEIDUNG_URL = "http://localhost:9000";
 const WASCH_URL = "http://localhost:4321";
 

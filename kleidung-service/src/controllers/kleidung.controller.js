@@ -1,9 +1,3 @@
-/**
- * Copilot-generierter Code
- * Codestelle: kleidung-service/src/controllers/kleidung.controller.js
- * Prompt: "use the endpoints described in the kleidung-service.yaml"
- */
-
 import {
   findAllKleidungsstuecke,
   findKleidungsstueckById,
@@ -27,7 +21,7 @@ export default function registerRoutes(app) {
 }
 
 /**
- * GET /kleidungsstuecke - Returns array of all Kleidungsstücke
+ * GET /kleidungsstuecke
  * @param {Express.Request} req
  * @param {Express.Response} res
  */

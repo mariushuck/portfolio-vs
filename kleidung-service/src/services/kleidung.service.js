@@ -1,12 +1,4 @@
-/**
- * Copilot-generierter Code
- * Codestelle: kleidung-service/src/services/kleidung.service.js
- * Prompt: "finish this kleidung-service. note the prewritten code. one controller and service for each database entity"
- */
-
 import { db_ks } from "../database.js";
-
-// ==================== READ Statements ====================
 
 const findAllKleidungsstueckeStmt = db_ks.prepare(`
   SELECT ks.id,
@@ -34,14 +26,10 @@ const findKleidungsstueckByIdStmt = db_ks.prepare(`
    WHERE ks.id = ?
 `);
 
-// ==================== CREATE Statement ====================
-
 const createKleidungsstueckStmt = db_ks.prepare(`
   INSERT INTO kleidungsstuecke (name, kategorie_id, farbe)
     VALUES (?, ?, ?)
 `);
-
-// ==================== UPDATE Statement ====================
 
 const updateKleidungsstueckStmt = db_ks.prepare(`
   UPDATE kleidungsstuecke
@@ -50,8 +38,6 @@ const updateKleidungsstueckStmt = db_ks.prepare(`
         farbe = ?
   WHERE id = ?
 `);
-
-// ==================== PATCH Statements (Partial Update) ====================
 
 const patchKleidungsstueckNameStmt = db_ks.prepare(`
   UPDATE kleidungsstuecke SET name = ? WHERE id = ?
@@ -73,17 +59,12 @@ const patchKleidungsstueckFarbeStmt = db_ks.prepare(`
   UPDATE kleidungsstuecke SET farbe = ? WHERE id = ?
 `);
 
-// ==================== DELETE Statement ====================
-
 const deleteKleidungsstueckStmt = db_ks.prepare(`
   DELETE FROM kleidungsstuecke
    WHERE id = ?
 `);
 
-// ==================== READ ====================
-
 /**
- * Finds all Kleidungsstücke with their Kategorie information
  * @returns {Array<object>}
  */
 export function findAllKleidungsstuecke() {
@@ -91,7 +72,6 @@ export function findAllKleidungsstuecke() {
 }
 
 /**
- * Finds a specific Kleidungsstück by ID
  * @param {number} id
  * @returns {object | undefined}
  */
@@ -99,10 +79,7 @@ export function findKleidungsstueckById(id) {
   return findKleidungsstueckByIdStmt.get(id);
 }
 
-// ==================== CREATE ====================
-
 /**
- * Creates a new Kleidungsstück
  * @param {string} name
  * @param {number} kategorie_id
  * @param {string} farbe
@@ -112,10 +89,7 @@ export function createKleidungsstueck(name, kategorie_id, farbe) {
   return createKleidungsstueckStmt.run(name, kategorie_id, farbe);
 }
 
-// ==================== UPDATE ====================
-
 /**
- * Updates an existing Kleidungsstück
  * @param {number} id
  * @param {string} name
  * @param {number} kategorie_id
@@ -126,12 +100,9 @@ export function updateKleidungsstueck(id, name, kategorie_id, farbe) {
   return updateKleidungsstueckStmt.run(name, kategorie_id, farbe, id);
 }
 
-// ==================== PATCH ====================
-
 /**
- * Partially updates a Kleidungsstück with only provided fields
  * @param {number} id
- * @param {object} updates - Object with fields: name, kategorieId, farbe
+ * @param {object} updates
  * @returns {object}
  */
 export function patchKleidungsstueck(id, updates) {
@@ -156,15 +127,11 @@ export function patchKleidungsstueck(id, updates) {
     const current = findKleidungsstueckById(id);
     return updateKleidungsstueck(id, name, kategorieId, current?.farbe || null);
   } else {
-    // No valid updates
     return { changes: 0 };
   }
 }
 
-// ==================== DELETE ====================
-
 /**
- * Deletes a Kleidungsstück by ID
  * @param {number} id
  * @returns {object}
  */
