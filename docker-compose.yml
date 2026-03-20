@@ -1,0 +1,32 @@
+name: portfolio-vs
+
+services:
+  kleidung-service:
+    build:
+      context: ./kleidung-service
+      dockerfile: Dockerfile
+    container_name: kleidung-service
+    environment:
+      LISTEN_HOST: 0.0.0.0
+      LISTEN_PORT: 9000
+      NODE_ENV: production
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./kleidung-service/db_ks.sqlite:/app/db_ks.sqlite
+    restart: unless-stopped
+
+  wasch-service:
+    build:
+      context: ./wasch-service
+      dockerfile: Dockerfile
+    container_name: wasch-service
+    environment:
+      LISTEN_HOST: 0.0.0.0
+      LISTEN_PORT: 4321
+      NODE_ENV: production
+    ports:
+      - "4321:4321"
+    volumes:
+      - ./wasch-service/db_ws.sqlite:/app/db_ws.sqlite
+    restart: unless-stopped
