@@ -1,4 +1,4 @@
-# Portfolio-VS
+# Portfolio verteilte Systeme
 
 Ein kleines Microservice-Beispiel mit zwei Node.js/Express-Services und SQLite:
 
