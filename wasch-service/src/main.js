@@ -39,7 +39,7 @@ try {
     config.mqtt.password,
   );
   logger.info("Verbindung zum MQTT-Broker hergestellt");
-} catch (err) {
+} catch (error) {
   logger.error(error);
   logger.error("Fehler beim Herstellen der MQTT-Verbindung:");
 }
