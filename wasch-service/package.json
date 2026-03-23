@@ -21,6 +21,7 @@
     "express": "^5.2.1",
     "http-terminator": "^3.2.0",
     "logging": "^4.2.0",
+    "mqtt": "^5.15.0",
     "qs": "^6.15.0"
   },
   "devDependencies": {
