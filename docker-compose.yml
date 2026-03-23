@@ -8,10 +8,10 @@ services:
     container_name: kleidung-service
     environment:
       LISTEN_HOST: 0.0.0.0
-      LISTEN_PORT: 9000
+      LISTEN_PORT: 1234
       NODE_ENV: production
     ports:
-      - "9000:9000"
+      - "1234:1234"
     volumes:
       - ./kleidung-service/db_ks.sqlite:/app/db_ks.sqlite
     restart: unless-stopped
