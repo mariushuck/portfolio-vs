@@ -7,6 +7,7 @@ import {
   deleteKategorie,
 } from "../services/kategorien.service.js";
 import { throwError, throwNotFound } from "../utils.js";
+import { mqttClient } from "../mqtt.js";
 
 /**
  * @param {Express.App} app
