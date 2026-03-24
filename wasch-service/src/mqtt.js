@@ -12,7 +12,8 @@ export let mqttClient = undefined;
  * Verwendung derselben Werte zu vermeiden).
  */
 export const mqttTopics = {
-  hello: "wwi24b2/schulmeister/hello",
+  kleidung: "wwi24b2/huck/kleidung",
+  waschgaenge: "wwi24b2/huck/waschgaenge",
 };
 
 /**

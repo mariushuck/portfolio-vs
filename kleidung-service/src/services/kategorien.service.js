@@ -1,4 +1,6 @@
 import { db_ks } from "../database.js";
+import { mqttClient, mqttTopics } from "../mqtt.js";
+import { logger } from "../utils.js";
 
 const findAllKategorienStmt = db_ks.prepare(`
   SELECT id,
@@ -41,6 +43,27 @@ const deleteKategorieStmt = db_ks.prepare(`
    WHERE id = ?
 `);
 
+async function publishKleidungEvent(event, id, data) {
+  if (!mqttClient) {
+    return;
+  }
+
+  try {
+    await mqttClient.publishAsync(
+      mqttTopics.kleidung,
+      JSON.stringify({
+        event,
+        entity: "Kategorie",
+        id: String(id),
+        data,
+      }),
+      { qos: 1 },
+    );
+  } catch (error) {
+    logger.error("MQTT publish fehlgeschlagen (Kategorie):", error);
+  }
+}
+
 /**
  * @returns {Array<object>}
  */
@@ -62,7 +85,12 @@ export function findKategorieById(id) {
  * @returns {object}
  */
 export function createKategorie(bezeichnung, materialtyp) {
-  return createKategorieStmt.run(bezeichnung, materialtyp);
+  const result = createKategorieStmt.run(bezeichnung, materialtyp);
+  const created = findKategorieById(result.lastInsertRowid);
+
+  void publishKleidungEvent("create", result.lastInsertRowid, created);
+
+  return result;
 }
 
 /**
@@ -72,7 +100,14 @@ export function createKategorie(bezeichnung, materialtyp) {
  * @returns {object}
  */
 export function updateKategorie(id, bezeichnung, materialtyp) {
-  return updateKategorieStmt.run(bezeichnung, materialtyp, id);
+  const result = updateKategorieStmt.run(bezeichnung, materialtyp, id);
+
+  if (result.changes > 0) {
+    const updated = findKategorieById(id);
+    void publishKleidungEvent("update", id, updated);
+  }
+
+  return result;
 }
 
 /**
@@ -85,15 +120,24 @@ export function patchKategorie(id, updates) {
   const hasBezeichnung = bezeichnung !== undefined;
   const hasMaterialtyp = materialtyp !== undefined;
 
+  let result;
+
   if (hasBezeichnung && hasMaterialtyp) {
-    return updateKategorie(id, bezeichnung, materialtyp);
+    result = updateKategorieStmt.run(bezeichnung, materialtyp, id);
   } else if (hasBezeichnung) {
-    return patchKategorieBezeichnungStmt.run(bezeichnung, id);
+    result = patchKategorieBezeichnungStmt.run(bezeichnung, id);
   } else if (hasMaterialtyp) {
-    return patchKategorieMaterialtypStmt.run(materialtyp, id);
+    result = patchKategorieMaterialtypStmt.run(materialtyp, id);
   } else {
-    return { changes: 0 };
+    result = { changes: 0 };
   }
+
+  if (result.changes > 0) {
+    const updated = findKategorieById(id);
+    void publishKleidungEvent("update", id, updated);
+  }
+
+  return result;
 }
 
 /**
@@ -101,5 +145,12 @@ export function patchKategorie(id, updates) {
  * @returns {object}
  */
 export function deleteKategorie(id) {
-  return deleteKategorieStmt.run(id);
+  const deleted = findKategorieById(id);
+  const result = deleteKategorieStmt.run(id);
+
+  if (result.changes > 0) {
+    void publishKleidungEvent("delete", id, deleted);
+  }
+
+  return result;
 }

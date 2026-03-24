@@ -12,6 +12,7 @@ import { logger } from "./utils.js";
 import controllers from "./controllers/index.js";
 
 import * as mqtt from "./mqtt.js";
+import mqttHandlers from "./mqtt_handlers/index.js";
 
 /**
  * Konfiguration aus den Umgebungsvariablen des Betriebssystems einlesen
@@ -39,6 +40,10 @@ try {
     config.mqtt.password,
   );
   logger.info("Verbindung zum MQTT-Broker hergestellt");
+
+  for (let handler of mqttHandlers || []) {
+    await handler(mqttClient);
+  }
 } catch (error) {
   logger.error(error);
   logger.error("Fehler beim Herstellen der MQTT-Verbindung:");

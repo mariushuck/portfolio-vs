@@ -1,4 +1,6 @@
 import { db_ws } from "../database.js";
+import { mqttClient, mqttTopics } from "../mqtt.js";
+import { logger } from "../utils.js";
 
 const findAllWaschgaengeStmt = db_ws.prepare(`
   SELECT wg.id,
@@ -50,6 +52,27 @@ const deleteWaschgangStmt = db_ws.prepare(`
    WHERE id = ?
 `);
 
+async function publishWaschEvent(event, id, data) {
+  if (!mqttClient) {
+    return;
+  }
+
+  try {
+    await mqttClient.publishAsync(
+      mqttTopics.waschgaenge,
+      JSON.stringify({
+        event,
+        entity: "Waschgang",
+        id: String(id),
+        data,
+      }),
+      { qos: 1 },
+    );
+  } catch (error) {
+    logger.error("MQTT publish fehlgeschlagen (Waschgang):", error);
+  }
+}
+
 export function findAllWaschgaenge() {
   return findAllWaschgaengeStmt.all();
 }
@@ -59,27 +82,53 @@ export function findWaschgangById(id) {
 }
 
 export function createWaschgang(waschprogrammId) {
-  return createWaschgangStmt.run(
+  const result = createWaschgangStmt.run(
     waschprogrammId,
     new Date().toISOString(),
     "geplant",
   );
+
+  const created = findWaschgangById(result.lastInsertRowid);
+  void publishWaschEvent("create", result.lastInsertRowid, created);
+
+  return result;
 }
 
 export function updateWaschgang(id, waschprogrammId, zeitstempel, status) {
-  return updateWaschgangStmt.run(waschprogrammId, zeitstempel, status, id);
+  const result = updateWaschgangStmt.run(waschprogrammId, zeitstempel, status, id);
+
+  if (result.changes > 0) {
+    const updated = findWaschgangById(id);
+    void publishWaschEvent("update", id, updated);
+  }
+
+  return result;
 }
 
 export function patchWaschgang(id, updates) {
   const { waschprogrammId } = updates;
 
   if (waschprogrammId !== undefined) {
-    return patchWaschgangWaschprogrammStmt.run(waschprogrammId, id);
+    const result = patchWaschgangWaschprogrammStmt.run(waschprogrammId, id);
+
+    if (result.changes > 0) {
+      const updated = findWaschgangById(id);
+      void publishWaschEvent("update", id, updated);
+    }
+
+    return result;
   }
 
   return { changes: 0 };
 }
 
 export function deleteWaschgang(id) {
-  return deleteWaschgangStmt.run(id);
+  const deleted = findWaschgangById(id);
+  const result = deleteWaschgangStmt.run(id);
+
+  if (result.changes > 0) {
+    void publishWaschEvent("delete", id, deleted);
+  }
+
+  return result;
 }

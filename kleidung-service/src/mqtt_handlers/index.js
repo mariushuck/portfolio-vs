@@ -1,3 +1,3 @@
-import helloHandler from "./hello.mqtt_handlers.js";
+import waschgaengeHandler from "./waschgaenge.mqtt_handler.js";
 
-export default [helloHandler];
+export default [waschgaengeHandler];

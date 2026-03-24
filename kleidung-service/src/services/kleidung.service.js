@@ -1,4 +1,6 @@
 import { db_ks } from "../database.js";
+import { mqttClient, mqttTopics } from "../mqtt.js";
+import { logger } from "../utils.js";
 
 const findAllKleidungsstueckeStmt = db_ks.prepare(`
   SELECT ks.id,
@@ -64,6 +66,27 @@ const deleteKleidungsstueckStmt = db_ks.prepare(`
    WHERE id = ?
 `);
 
+async function publishKleidungEvent(event, id, data) {
+  if (!mqttClient) {
+    return;
+  }
+
+  try {
+    await mqttClient.publishAsync(
+      mqttTopics.kleidung,
+      JSON.stringify({
+        event,
+        entity: "Kleidung",
+        id: String(id),
+        data,
+      }),
+      { qos: 1 },
+    );
+  } catch (error) {
+    logger.error("MQTT publish fehlgeschlagen (Kleidung):", error);
+  }
+}
+
 /**
  * @returns {Array<object>}
  */
@@ -86,7 +109,12 @@ export function findKleidungsstueckById(id) {
  * @returns {object}
  */
 export function createKleidungsstueck(name, kategorie_id, farbe) {
-  return createKleidungsstueckStmt.run(name, kategorie_id, farbe);
+  const result = createKleidungsstueckStmt.run(name, kategorie_id, farbe);
+  const created = findKleidungsstueckById(result.lastInsertRowid);
+
+  void publishKleidungEvent("create", result.lastInsertRowid, created);
+
+  return result;
 }
 
 /**
@@ -97,7 +125,14 @@ export function createKleidungsstueck(name, kategorie_id, farbe) {
  * @returns {object}
  */
 export function updateKleidungsstueck(id, name, kategorie_id, farbe) {
-  return updateKleidungsstueckStmt.run(name, kategorie_id, farbe, id);
+  const result = updateKleidungsstueckStmt.run(name, kategorie_id, farbe, id);
+
+  if (result.changes > 0) {
+    const updated = findKleidungsstueckById(id);
+    void publishKleidungEvent("update", id, updated);
+  }
+
+  return result;
 }
 
 /**
@@ -111,24 +146,38 @@ export function patchKleidungsstueck(id, updates) {
   const hasKategorie = kategorieId !== undefined;
   const hasFarbe = farbe !== undefined;
 
+  let result;
+
   if (hasName && !hasKategorie && !hasFarbe) {
-    return patchKleidungsstueckNameStmt.run(name, id);
+    result = patchKleidungsstueckNameStmt.run(name, id);
   } else if (!hasName && hasKategorie && hasFarbe) {
-    return patchKleidungsstueckKategorieFarbeStmt.run(kategorieId, farbe, id);
+    result = patchKleidungsstueckKategorieFarbeStmt.run(kategorieId, farbe, id);
   } else if (!hasName && hasKategorie && !hasFarbe) {
-    return patchKleidungsstueckKategorieStmt.run(kategorieId, id);
+    result = patchKleidungsstueckKategorieStmt.run(kategorieId, id);
   } else if (hasName && !hasKategorie && hasFarbe) {
-    return patchKleidungsstueckNamFarbeStmt.run(name, farbe, id);
+    result = patchKleidungsstueckNamFarbeStmt.run(name, farbe, id);
   } else if (!hasName && !hasKategorie && hasFarbe) {
-    return patchKleidungsstueckFarbeStmt.run(farbe, id);
+    result = patchKleidungsstueckFarbeStmt.run(farbe, id);
   } else if (hasName && hasKategorie && hasFarbe) {
-    return updateKleidungsstueck(id, name, kategorieId, farbe);
+    result = updateKleidungsstueckStmt.run(name, kategorieId, farbe, id);
   } else if (hasName && hasKategorie && !hasFarbe) {
     const current = findKleidungsstueckById(id);
-    return updateKleidungsstueck(id, name, kategorieId, current?.farbe || null);
+    result = updateKleidungsstueckStmt.run(
+      name,
+      kategorieId,
+      current?.farbe || null,
+      id,
+    );
   } else {
-    return { changes: 0 };
+    result = { changes: 0 };
   }
+
+  if (result.changes > 0) {
+    const updated = findKleidungsstueckById(id);
+    void publishKleidungEvent("update", id, updated);
+  }
+
+  return result;
 }
 
 /**
@@ -136,5 +185,12 @@ export function patchKleidungsstueck(id, updates) {
  * @returns {object}
  */
 export function deleteKleidungsstueck(id) {
-  return deleteKleidungsstueckStmt.run(id);
+  const deleted = findKleidungsstueckById(id);
+  const result = deleteKleidungsstueckStmt.run(id);
+
+  if (result.changes > 0) {
+    void publishKleidungEvent("delete", id, deleted);
+  }
+
+  return result;
 }

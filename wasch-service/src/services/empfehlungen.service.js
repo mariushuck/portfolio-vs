@@ -1,4 +1,6 @@
 import { db_ws } from "../database.js";
+import { mqttClient, mqttTopics } from "../mqtt.js";
+import { logger } from "../utils.js";
 
 const findAllEmpfehlungenStmt = db_ws.prepare(`
   SELECT e.id,
@@ -46,6 +48,27 @@ const deleteEmpfehlungByKategorieIdStmt = db_ws.prepare(`
    WHERE kategorie_id = ?
 `);
 
+async function publishWaschEvent(event, id, data) {
+  if (!mqttClient) {
+    return;
+  }
+
+  try {
+    await mqttClient.publishAsync(
+      mqttTopics.waschgaenge,
+      JSON.stringify({
+        event,
+        entity: "Empfehlung",
+        id: String(id),
+        data,
+      }),
+      { qos: 1 },
+    );
+  } catch (error) {
+    logger.error("MQTT publish fehlgeschlagen (Empfehlung):", error);
+  }
+}
+
 export function findAllEmpfehlungen() {
   return findAllEmpfehlungenStmt.all();
 }
@@ -55,11 +78,23 @@ export function findEmpfehlungByKategorieId(kategorieId) {
 }
 
 export function createEmpfehlung(kategorieId, waschprogrammId) {
-  return createEmpfehlungStmt.run(kategorieId, waschprogrammId);
+  const result = createEmpfehlungStmt.run(kategorieId, waschprogrammId);
+  const created = findEmpfehlungByKategorieId(kategorieId);
+
+  void publishWaschEvent("create", kategorieId, created);
+
+  return result;
 }
 
 export function updateEmpfehlungByKategorieId(kategorieId, waschprogrammId) {
-  return updateEmpfehlungByKategorieIdStmt.run(waschprogrammId, kategorieId);
+  const result = updateEmpfehlungByKategorieIdStmt.run(waschprogrammId, kategorieId);
+
+  if (result.changes > 0) {
+    const updated = findEmpfehlungByKategorieId(kategorieId);
+    void publishWaschEvent("update", kategorieId, updated);
+  }
+
+  return result;
 }
 
 export function patchEmpfehlungByKategorieId(kategorieId, updates) {
@@ -67,12 +102,29 @@ export function patchEmpfehlungByKategorieId(kategorieId, updates) {
   const hasWaschprogrammId = waschprogrammId !== undefined;
 
   if (hasWaschprogrammId) {
-    return patchEmpfehlungWaschprogrammStmt.run(waschprogrammId, kategorieId);
+    const result = patchEmpfehlungWaschprogrammStmt.run(
+      waschprogrammId,
+      kategorieId,
+    );
+
+    if (result.changes > 0) {
+      const updated = findEmpfehlungByKategorieId(kategorieId);
+      void publishWaschEvent("update", kategorieId, updated);
+    }
+
+    return result;
   }
 
   return { changes: 0 };
 }
 
 export function deleteEmpfehlungByKategorieId(kategorieId) {
-  return deleteEmpfehlungByKategorieIdStmt.run(kategorieId);
+  const deleted = findEmpfehlungByKategorieId(kategorieId);
+  const result = deleteEmpfehlungByKategorieIdStmt.run(kategorieId);
+
+  if (result.changes > 0) {
+    void publishWaschEvent("delete", kategorieId, deleted);
+  }
+
+  return result;
 }
