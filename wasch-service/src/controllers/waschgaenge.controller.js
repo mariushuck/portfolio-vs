@@ -8,6 +8,8 @@ import {
 } from "../services/waschgaenge.service.js";
 import { throwError, throwNotFound } from "../utils.js";
 
+const ALLOWED_STATUS = ["geplant", "in_bearbeitung", "abgeschlossen"];
+
 /**
  * @param {Express.App} app
  */
@@ -69,12 +71,31 @@ function updateWaschgangRoute(req, res) {
     throwError("INVALID-ID", "Ungültige ID", 400);
   }
 
-  const { waschprogrammId } = req.body;
+  const { waschprogrammId, zeitstempel, status } = req.body;
 
   if (!Number.isInteger(waschprogrammId)) {
     throwError(
       "MISSING-FIELDS",
       "Erforderliches Feld: waschprogrammId (int)",
+      400,
+    );
+  }
+
+  if (
+    typeof zeitstempel !== "string" ||
+    Number.isNaN(Date.parse(zeitstempel))
+  ) {
+    throwError(
+      "MISSING-FIELDS",
+      "Erforderliches Feld: zeitstempel (ISO-8601 String)",
+      400,
+    );
+  }
+
+  if (typeof status !== "string" || !ALLOWED_STATUS.includes(status)) {
+    throwError(
+      "MISSING-FIELDS",
+      "Erforderliches Feld: status (geplant|in_bearbeitung|abgeschlossen)",
       400,
     );
   }
@@ -85,12 +106,7 @@ function updateWaschgangRoute(req, res) {
     throwNotFound();
   }
 
-  const result = updateWaschgang(
-    id,
-    waschprogrammId,
-    item.zeitstempel,
-    item.status,
-  );
+  const result = updateWaschgang(id, waschprogrammId, zeitstempel, status);
 
   if (result.changes === 0) {
     throwError("UPDATE-FAILED", "Update fehlgeschlagen", 500);
