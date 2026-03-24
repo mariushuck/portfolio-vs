@@ -30,7 +30,7 @@ docker compose up --build
 
 Danach laufen die Services unter:
 
-- Kleidung: `http://localhost:9000`
+- Kleidung: `http://localhost:1234`
 - Waschen: `http://localhost:4321`
 
 Beenden:
@@ -54,7 +54,7 @@ npm install
 npm run start
 ```
 
-Standard-Port: `9000`
+Standard-Port: `1234`
 
 ### 2) Wasch-Service
 
@@ -77,7 +77,7 @@ Standard-Port: `4321`
 
 ## API-Uebersicht
 
-### Kleidung-Service (`http://localhost:9000`)
+### Kleidung-Service (`http://localhost:1234`)
 
 #### Kategorien
 
@@ -175,8 +175,8 @@ Beispiel-Body fuer `POST /waschgaenge`:
 ## Testaufrufe mit curl
 
 ```bash
-curl http://localhost:9000/kategorien
-curl http://localhost:9000/kleidungsstuecke
+curl http://localhost:1234/kategorien
+curl http://localhost:1234/kleidungsstuecke
 curl http://localhost:4321/waschprogramme
 curl http://localhost:4321/empfehlungen
 curl http://localhost:4321/waschgaenge

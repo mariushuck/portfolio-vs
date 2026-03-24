@@ -6,13 +6,12 @@ services:
       context: ./kleidung-service
       dockerfile: Dockerfile
     container_name: kleidung-service
+    env_file:
+      - ./kleidung-service/.env
     environment:
       LISTEN_HOST: 0.0.0.0
       LISTEN_PORT: 1234
       NODE_ENV: production
-      MQTT_BROKER: mqtt://host.docker.internal:1883
-      MQTT_USERNAME: mosquitto
-      MQTT_PASSWORD: mosquitto
     ports:
       - "1234:1234"
     volumes:
@@ -24,13 +23,12 @@ services:
       context: ./wasch-service
       dockerfile: Dockerfile
     container_name: wasch-service
+    env_file:
+      - ./wasch-service/.env
     environment:
       LISTEN_HOST: 0.0.0.0
       LISTEN_PORT: 4321
       NODE_ENV: production
-      MQTT_BROKER: mqtt://host.docker.internal:1883
-      MQTT_USERNAME: mosquitto
-      MQTT_PASSWORD: mosquitto
     ports:
       - "4321:4321"
     volumes:
