@@ -1,0 +1,17 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY package.json ./
+RUN npm install --omit=dev
+
+COPY server.js ./
+COPY static ./static
+
+EXPOSE 8080
+
+ENV LISTEN_HOST=0.0.0.0
+ENV LISTEN_PORT=8080
+ENV NODE_ENV=production
+
+CMD ["npm", "start"]
