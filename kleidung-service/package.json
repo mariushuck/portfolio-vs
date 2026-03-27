@@ -13,7 +13,8 @@
     "start": "node src/main.js",
     "init-db": "node src/database.js",
     "watch": "nodemon src/main.js",
-    "debug": "node --inspect-brk src/main.js"
+    "debug": "node --inspect-brk src/main.js",
+    "test": "vitest run"
   },
   "dependencies": {
     "better-sqlite3": "^12.6.2",
@@ -25,6 +26,8 @@
     "qs": "^6.15.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "supertest": "^7.1.4",
+    "vitest": "^3.2.4"
   }
 }
