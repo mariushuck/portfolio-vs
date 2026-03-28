@@ -1,26 +1,37 @@
-# Portfolio verteilte Systeme
+# Portfolio Verteilte Systeme
 
-Ein kleines Microservice-Beispiel mit zwei Node.js/Express-Services und SQLite:
+Microservice-Demo mit zwei Node.js/Express-Backends, SQLite und einem Frontend-Gateway.
 
 - `kleidung-service`: Verwaltung von Kategorien und Kleidungsstuecken
 - `wasch-service`: Verwaltung von Waschprogrammen, Waschgaengen und Empfehlungen
+- `frontend`: UI + Reverse Proxy fuer beide APIs
 
-Beide Services enthalten Demodaten und liefern statische Inhalte unter `static/` aus.
+## Architektur (Stand: 28.03.2026)
+
+- `kleidung-service` laeuft auf Port `1234`
+- `wasch-service` laeuft auf Port `4321`
+- `frontend` laeuft auf Port `8080`
+- Frontend-Proxy-Routen:
+  - `/api/kleidung/*` -> `kleidung-service:1234/*`
+  - `/api/wasch/*` -> `wasch-service:4321/*`
+
+Die Services publizieren/abonnieren zusaetzlich MQTT-Events (Broker via `.env`).
 
 ## Projektstruktur
 
-- `kleidung-service/` API fuer Kleidung
-- `wasch-service/` API fuer Waschen
-- `docker-compose.yml` Gemeinsamer Start beider Services
-- `document/` Dokumente (Typst)
+- `frontend/` Frontend-Server und statische Web-App
+- `kleidung-service/` API fuer Kategorien und Kleidungsstuecke
+- `wasch-service/` API fuer Waschprogramme, Waschgaenge und Empfehlungen
+- `docker-compose.yml` Full-Stack Start (beide Services + Frontend)
+- `document/` Projektdokumentation (Typst)
 
 ## Voraussetzungen
 
-- Node.js 20+ (empfohlen)
-- npm 10+ (empfohlen)
-- Optional: Docker + Docker Compose
+- Node.js 20+
+- npm 10+
+- Optional (empfohlen fuer Full-Stack): Docker + Docker Compose
 
-## Schnellstart mit Docker Compose
+## Schnellstart (empfohlen) mit Docker Compose
 
 Im Projektverzeichnis:
 
@@ -28,23 +39,24 @@ Im Projektverzeichnis:
 docker compose up --build
 ```
 
-Danach laufen die Services unter:
+Danach ist erreichbar:
 
-- Kleidung: `http://localhost:1234`
-- Waschen: `http://localhost:4321`
+- Frontend (empfohlen): `http://localhost:8080`
+- Kleidung-API direkt: `http://localhost:1234`
+- Wasch-API direkt: `http://localhost:4321`
 
-Beenden:
+Stoppen:
 
 ```bash
 docker compose down
 ```
 
-Hinweis: Die SQLite-Dateien werden als Volumes eingebunden:
+Persistente SQLite-Dateien (Host-Mounts):
 
 - `kleidung-service/db_ks.sqlite`
 - `wasch-service/db_ws.sqlite`
 
-## Lokaler Start ohne Docker
+## Lokaler Start ohne Docker (Backends)
 
 ### 1) Kleidung-Service
 
@@ -53,8 +65,6 @@ cd kleidung-service
 npm install
 npm run start
 ```
-
-Standard-Port: `1234`
 
 ### 2) Wasch-Service
 
@@ -66,18 +76,33 @@ npm install
 npm run start
 ```
 
-Standard-Port: `4321`
+Die Backends lesen ihre Konfiguration aus `.env` (Host, Port, MQTT-Broker).
 
-## Verfuegbare npm-Skripte (pro Service)
+Hinweis: Das Frontend ist fuer Compose-Netzwerkziele (`kleidung-service`, `wasch-service`) konfiguriert. Fuer den lokalen Entwicklungsbetrieb der APIs koennen die Backends direkt auf `1234` und `4321` genutzt werden.
 
-- `npm run start` Startet den Server
-- `npm run watch` Startet mit `nodemon`
-- `npm run debug` Startet mit Node-Debugger
-- `npm run init-db` Initialisiert die DB (optional)
+## npm-Skripte
+
+### `kleidung-service` und `wasch-service`
+
+- `npm run start` Server starten
+- `npm run watch` Server mit `nodemon` starten
+- `npm run debug` Start im Node-Debug-Modus
+- `npm run init-db` DB initialisieren
+- `npm run test` Vitest-Testlauf
+
+### `frontend`
+
+- `npm run start` Frontend-Server starten
+- `npm run dev` Frontend-Server im Watch-Modus
 
 ## API-Uebersicht
 
-### Kleidung-Service (`http://localhost:1234`)
+Die Endpunkte sind entweder direkt ueber die Service-Ports oder ueber das Frontend erreichbar:
+
+- Kleidung ueber Frontend: `http://localhost:8080/api/kleidung/...`
+- Waschen ueber Frontend: `http://localhost:8080/api/wasch/...`
+
+### Kleidung-Service
 
 #### Kategorien
 
@@ -88,7 +113,7 @@ Standard-Port: `4321`
 - `PATCH /kategorien/:id`
 - `DELETE /kategorien/:id`
 
-Beispiel-Body fuer `POST /kategorien`:
+Beispiel `POST /kategorien`:
 
 ```json
 {
@@ -106,7 +131,7 @@ Beispiel-Body fuer `POST /kategorien`:
 - `PATCH /kleidungsstuecke/:id`
 - `DELETE /kleidungsstuecke/:id`
 
-Beispiel-Body fuer `POST /kleidungsstuecke`:
+Beispiel `POST /kleidungsstuecke`:
 
 ```json
 {
@@ -116,7 +141,7 @@ Beispiel-Body fuer `POST /kleidungsstuecke`:
 }
 ```
 
-### Wasch-Service (`http://localhost:4321`)
+### Wasch-Service
 
 #### Waschprogramme
 
@@ -127,7 +152,7 @@ Beispiel-Body fuer `POST /kleidungsstuecke`:
 - `PATCH /waschprogramme/:id`
 - `DELETE /waschprogramme/:id`
 
-Beispiel-Body fuer `POST /waschprogramme`:
+Beispiel `POST /waschprogramme`:
 
 ```json
 {
@@ -146,7 +171,7 @@ Beispiel-Body fuer `POST /waschprogramme`:
 - `PATCH /empfehlungen/:kategorieId`
 - `DELETE /empfehlungen/:kategorieId`
 
-Beispiel-Body fuer `POST /empfehlungen`:
+Beispiel `POST /empfehlungen`:
 
 ```json
 {
@@ -164,7 +189,7 @@ Beispiel-Body fuer `POST /empfehlungen`:
 - `PATCH /waschgaenge/:id`
 - `DELETE /waschgaenge/:id`
 
-Beispiel-Body fuer `POST /waschgaenge`:
+Beispiel `POST /waschgaenge`:
 
 ```json
 {
@@ -172,14 +197,23 @@ Beispiel-Body fuer `POST /waschgaenge`:
 }
 ```
 
-## Testaufrufe mit curl
+## Schnelltests mit curl
+
+Ueber das Frontend-Gateway:
 
 ```bash
-curl http://localhost:1234/kategorien
-curl http://localhost:1234/kleidungsstuecke
-curl http://localhost:4321/waschprogramme
-curl http://localhost:4321/empfehlungen
-curl http://localhost:4321/waschgaenge
+curl http://localhost:8080/api/kleidung/kategorien
+curl http://localhost:8080/api/kleidung/kleidungsstuecke
+curl http://localhost:8080/api/wasch/waschprogramme
+curl http://localhost:8080/api/wasch/empfehlungen
+curl http://localhost:8080/api/wasch/waschgaenge
+```
+
+## Tests ausfuehren
+
+```bash
+cd kleidung-service && npm test
+cd wasch-service && npm test
 ```
 
 ## Lizenz
