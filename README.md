@@ -15,7 +15,7 @@ Folgende Codestellen und Dateien sind in diesem Projekt durch die Unterstützung
 - Errorhandling in den Service-Dateien
 - Erstellen der `database.js` Skripte
 - Erstellen der gesamten Tests
-- Erster Entwurf der Dockerfiles sowie der `docker-compose.yml`
+- Erster Entwurf der Dockerfiles sowie der `docker-compose.yaml`
 - Erstellen der `README.md` Datei
 
 **Zusätzliche Hinweise für die Bewertung:**
@@ -40,7 +40,7 @@ Die Services publizieren/abonnieren zusaetzlich MQTT-Events (Broker via `.env`).
 - `frontend/` Frontend-Server und statische Web-App
 - `kleidung-service/` API fuer Kategorien und Kleidungsstuecke
 - `wasch-service/` API fuer Waschprogramme, Waschgaenge und Empfehlungen
-- `docker-compose.yml` Full-Stack Start (beide Services + Frontend)
+- `docker-compose.yaml` Full-Stack Start (beide Services + Frontend)
 - `document/` Projektdokumentation (Typst)
 
 ## Voraussetzungen
