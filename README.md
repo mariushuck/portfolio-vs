@@ -6,6 +6,24 @@ Microservice-Demo mit zwei Node.js/Express-Backends, SQLite und einem Frontend-G
 - `wasch-service`: Verwaltung von Waschprogrammen, Waschgaengen und Empfehlungen
 - `frontend`: UI + Reverse Proxy fuer beide APIs
 
+## Benotungshinweise
+
+Folgende Codestellen und Dateien sind in diesem Projekt durch die Unterstützung von GitHub Copilot entstanden:
+
+- SQL Errorhandling
+- Errorhandling in den Controller-Dateien
+- Errorhandling in den Service-Dateien
+- Erstellen der `database.js` Skripte
+- Erstellen der gesamten Tests
+- Erster Entwurf der Dockerfiles sowie der `docker-compose.yml`
+- Erstellen der `README.md` Datei
+
+**Zusätzliche Hinweise für die Bewertung:**
+
+- **Aufgabe 4:** Für diese Aufgabe soll ausschließlich die Containerisierung gewertet werden, nicht das Frontend.
+- Das Frontend dient nur der Vollständigkeit des Projekts und ist vollständig durch GitHub Copilot entstanden.
+- Das Grundgerüst des Codes sowie die Strukturierung der Anwendung wurden aus der Vorlesung übernommen.
+
 ## Architektur (Stand: 28.03.2026)
 
 - `kleidung-service` laeuft auf Port `1234`
