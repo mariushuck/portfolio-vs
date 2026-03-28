@@ -6,7 +6,7 @@ Microservice-Demo mit zwei Node.js/Express-Backends, SQLite und einem Frontend-G
 - `wasch-service`: Verwaltung von Waschprogrammen, Waschgaengen und Empfehlungen
 - `frontend`: UI + Reverse Proxy fuer beide APIs
 
-## Benotungshinweise
+## Korrekturhinweise
 
 Folgende Codestellen und Dateien sind in diesem Projekt durch die Unterstützung von GitHub Copilot entstanden:
 
